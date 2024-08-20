@@ -4,62 +4,46 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+
 import "./App.css";
 
-function DataTable({ data: { header, rows } }) {
-  return (
-    <table>
-      <tbody>
-        <tr>
-          {header.map((h, i) => (
-            <td
-              style={{ key: { i }, padding: "3px", border: "1px solid white" }}
-            >
-              <strong>{h}</strong>
-            </td>
-          ))}
-        </tr>
-        {rows.map((row, i) => (
-          <tr key={i}>
-            {row.map((c, j) => (
-              <td
-                style={{
-                  key: { j },
-                  padding: "3px",
-                  border: "1px solid white",
-                }}
-              >
-                {c}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-}
-
 function App() {
-  const [statusMessage, setStatusMessage] = useState(<em>Drop a CSV File</em>);
-  const [data, setData] = useState(null);
+  const [statusMessage, setStatusMessage] = useState<string>("Drop a CSV File");
+  const [gridColumns, setGridColumns] = useState<GridColDef[] | null>(null);
+  const [gridRows, setGridRows] = useState<any>(null);
 
-  const drop = async (e) => {
+  const drop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+
     const files = [...e.dataTransfer.items]
       .map((i) => i.getAsFile())
       .filter((f) => f?.type == "text/csv");
-    if (files.length > 0) {
+
+    if (files.length > 0 && files[0] !== null) {
       const file = files[0];
       const text = await file.text();
 
-      const [header, ...rows] = text
+      const [csvHeaders, ...csvRows] = text
         .split("\n")
-        .filter((line) => line != "")
-        .map((line) => line.split(","));
+        .filter((line: string) => line != "")
+        .map((line: string) => line.split(","));
 
-      const obj = { header, rows };
+      const columns: GridColDef[] = csvHeaders.map((h: string) => {
+        return { field: h };
+      });
 
-      setData(obj);
+      const rows = csvRows.map((csvRow: string[], id: number) => {
+        const row: { id: number; [key: string]: string | number } = { id };
+        csvRow.forEach((c: string, j: number) => {
+          const h: string = csvHeaders[j];
+          row[h] = c;
+        });
+        return row;
+      });
+
+      setGridColumns(columns);
+      setGridRows(rows);
 
       setStatusMessage(`Dropped CSV file: ${file.name}`);
     } else {
@@ -84,8 +68,12 @@ function App() {
       >
         Drop File Here
       </div>
-      {data && data.header && data.rows ? (
-        <DataTable data={{ header: data.header, rows: data.rows }} />
+      {gridColumns && gridRows ? (
+        <DataGrid
+          sx={{ color: "#223355", backgroundColor: "white" }}
+          columns={gridColumns}
+          rows={gridRows}
+        />
       ) : (
         ""
       )}
