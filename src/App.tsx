@@ -4,19 +4,14 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
 
 import "./App.css";
-
-interface GridRow {
-  id: number;
-  [key: string]: string | number;
-}
 
 function App() {
   const [statusMessage, setStatusMessage] = useState<string>("Drop a CSV File");
   const [gridColumns, setGridColumns] = useState<GridColDef[] | null>(null);
-  const [gridRows, setGridRows] = useState<GridRow[] | null>(null);
+  const [gridRows, setGridRows] = useState<GridRowModel[] | null>(null);
 
   const drop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -39,7 +34,7 @@ function App() {
       });
 
       const rows = csvRows.map((csvRow: string[], id: number) => {
-        const row: GridRow = { id };
+        const row: GridRowModel = { id };
 
         csvRow.forEach((c: string, j: number) => {
           const h: string = csvHeaders[j];
