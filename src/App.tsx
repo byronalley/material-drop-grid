@@ -5,6 +5,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
+import Papa from "papaparse";
 
 import "./App.css";
 
@@ -22,31 +23,33 @@ function App() {
 
     if (files.length > 0 && files[0] !== null) {
       const file = files[0];
-      const text = await file.text();
+      const csv = await file.text();
 
-      const [csvHeaders, ...csvRows] = text
-        .split("\n")
-        .filter((line: string) => line != "")
-        .map((line: string) => line.split(","));
-
-      const columns: GridColDef[] = csvHeaders.map((h: string) => {
-        return { field: h };
+      const { data, errors, meta } = Papa.parse<object>(csv, {
+        header: true,
+        dynamicTyping: true,
       });
 
-      const rows = csvRows.map((csvRow: string[], id: number) => {
-        const row: GridRowModel = { id };
+      const columns: GridColDef[] =
+        meta.fields?.map((h: string) => ({ field: h })) || [];
 
-        csvRow.forEach((c: string, j: number) => {
-          const h: string = csvHeaders[j];
-          row[h] = c;
-        });
+      const rows = data.map((dataRow: object, id: number) => {
+        const row: GridRowModel = { ...dataRow, id };
+
         return row;
       });
 
       setGridColumns(columns);
       setGridRows(rows);
 
-      setStatusMessage(`Dropped CSV file: ${file.name}`);
+      if (errors.length > 0) {
+        setStatusMessage("There were errors parsing CSV file.");
+        console.log("CSV Parse Errors:");
+        console.dir(errors);
+        console.log("----");
+      } else {
+        setStatusMessage(`CSV file: ${file.name}`);
+      }
     } else {
       setStatusMessage("No CSV files found.");
     }
