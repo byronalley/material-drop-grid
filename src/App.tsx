@@ -4,18 +4,27 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import { DataGrid, GridColDef, GridRowModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridApi,
+  GridColDef,
+  GridRowModel,
+  useGridApiRef,
+} from "@mui/x-data-grid";
 import Papa from "papaparse";
 
 import "./App.css";
 
 function App() {
   const [statusMessage, setStatusMessage] = useState<string>("Drop a CSV File");
-  const [gridColumns, setGridColumns] = useState<GridColDef[] | null>(null);
-  const [gridRows, setGridRows] = useState<GridRowModel[] | null>(null);
+  const [gridColumns, setGridColumns] = useState<GridColDef[]>([]);
+  const [showGrid, setShowGrid] = useState(false);
 
-  const drop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const apiRef = useGridApiRef<GridApi>();
+
+  const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
+    setShowGrid(true);
 
     const files = [...e.dataTransfer.items]
       .map((i) => i.getAsFile())
@@ -23,33 +32,36 @@ function App() {
 
     if (files.length > 0 && files[0] !== null) {
       const file = files[0];
-      const csv = await file.text();
 
-      const { data, errors, meta } = Papa.parse<object>(csv, {
+      let id = 0;
+
+      Papa.parse<object>(file, {
         header: true,
         dynamicTyping: true,
+        skipEmptyLines: true,
+        step: (results) => {
+          if (id === 0) {
+            const columns: GridColDef[] =
+              results.meta.fields?.map((h: string) => ({ field: h })) || [];
+            setGridColumns(columns);
+          }
+
+          const row: GridRowModel = { id, ...results.data };
+
+          apiRef.current.updateRows([row]);
+          id++;
+        },
+        complete: (results, file) => {
+          if (results.errors.length > 0) {
+            setStatusMessage("There were errors parsing CSV file.");
+            console.log("CSV Parse Errors:");
+            console.dir(results.errors);
+            console.log("----");
+          } else {
+            setStatusMessage(`CSV file: ${(file as File)?.name}`);
+          }
+        },
       });
-
-      const columns: GridColDef[] =
-        meta.fields?.map((h: string) => ({ field: h })) || [];
-
-      const rows = data.map((dataRow: object, id: number) => {
-        const row: GridRowModel = { ...dataRow, id };
-
-        return row;
-      });
-
-      setGridColumns(columns);
-      setGridRows(rows);
-
-      if (errors.length > 0) {
-        setStatusMessage("There were errors parsing CSV file.");
-        console.log("CSV Parse Errors:");
-        console.dir(errors);
-        console.log("----");
-      } else {
-        setStatusMessage(`CSV file: ${file.name}`);
-      }
     } else {
       setStatusMessage("No CSV files found.");
     }
@@ -72,11 +84,11 @@ function App() {
       >
         Drop File Here
       </div>
-      {gridColumns && gridRows ? (
+      {showGrid ? (
         <DataGrid
           sx={{ color: "#223355", backgroundColor: "white" }}
-          columns={gridColumns}
-          rows={gridRows}
+          columns={gridColumns || []}
+          apiRef={apiRef}
         />
       ) : (
         ""
