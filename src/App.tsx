@@ -73,19 +73,6 @@ function App() {
     <>
       <h1>Material Drop Grid</h1>
       <p>{statusMessage}</p>
-      <div
-        id="fileDrop"
-        onDrop={drop}
-        onDragOver={(e) => e.preventDefault()}
-        style={{
-          width: "100%",
-          backgroundColor: "#33cccc",
-          height: "5em",
-          paddingTop: "2.5em",
-        }}
-      >
-        Drop File Here
-      </div>
       {showGrid ? (
         <>
           <Box backgroundColor="white" sx={{ p: 2 }}>
@@ -117,7 +104,19 @@ function App() {
           </Box>
         </>
       ) : (
-        ""
+        <div
+          id="fileDrop"
+          onDrop={drop}
+          onDragOver={(e) => e.preventDefault()}
+          style={{
+            width: "100%",
+            backgroundColor: "#33cccc",
+            height: "5em",
+            paddingTop: "2.5em",
+          }}
+        >
+          Drop File Here
+        </div>
       )}
     </>
   );
