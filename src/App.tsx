@@ -77,13 +77,12 @@ function App() {
       <p>{statusMessage}</p>
       {showGrid ? (
         <>
-          <Box backgroundColor="white" sx={{ p: 2 }}>
+          <Box sx={{ p: 2, background: "white" }}>
             <Box
               display="flex"
               justifyContent="flex-end"
               alignItems="flex-end"
-              backgroundColor="white"
-              sx={{ p: 2 }}
+              sx={{ p: 2, background: "white" }}
             >
               <Button
                 variant="contained"
@@ -100,7 +99,7 @@ function App() {
               </Button>
             </Box>
             <DataGrid
-              sx={{ color: "#223355", backgroundColor: "white" }}
+              sx={{ color: "#223355", background: "white" }}
               columns={gridColumns || []}
               apiRef={apiRef}
             />
