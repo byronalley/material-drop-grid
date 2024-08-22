@@ -106,19 +106,19 @@ function App() {
           </Box>
         </>
       ) : (
-        <div
+        <Box
           id="fileDrop"
           onDrop={drop}
           onDragOver={(e) => e.preventDefault()}
-          style={{
+          sx={{
             width: "100%",
-            backgroundColor: "#33cccc",
+            background: "#33cccc",
             height: "5em",
             paddingTop: "2.5em",
           }}
         >
           Drop File Here
-        </div>
+        </Box>
       )}
     </>
   );
