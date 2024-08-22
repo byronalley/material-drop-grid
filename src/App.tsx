@@ -17,8 +17,10 @@ import Papa from "papaparse";
 
 import "./App.css";
 
+const initialMessage = "Drop a CSV File";
+
 function App() {
-  const [statusMessage, setStatusMessage] = useState<string>("Drop a CSV File");
+  const [statusMessage, setStatusMessage] = useState<string>(initialMessage);
   const [gridColumns, setGridColumns] = useState<GridColDef[]>([]);
   const [showGrid, setShowGrid] = useState(false);
 
@@ -90,6 +92,7 @@ function App() {
                 onClick={(e) => {
                   e.preventDefault();
                   setShowGrid(false);
+                  setStatusMessage(initialMessage);
                 }}
               >
                 <ArrowBackIcon />
