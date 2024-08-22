@@ -11,8 +11,9 @@ import {
   GridRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Container } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import Papa from "papaparse";
 
 import "./App.css";
@@ -72,7 +73,13 @@ function App() {
   };
 
   return (
-    <>
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      flexDirection="column"
+      width="50%"
+    >
       <h1>Material Drop Grid</h1>
       <p>{statusMessage}</p>
       {showGrid ? (
@@ -110,17 +117,25 @@ function App() {
           id="fileDrop"
           onDrop={drop}
           onDragOver={(e) => e.preventDefault()}
+          display="flex"
+          justifyContent="center"
+          flexDirection="column"
+          alignItems="flex-middle"
+          sx={{ p: 2, background: "white" }}
           sx={{
             width: "100%",
             background: "#33cccc",
-            height: "5em",
-            paddingTop: "2.5em",
+            minHeight: "7em",
+            padding: "5em",
           }}
         >
-          Drop File Here
+          <Box>
+            <p>Drop File Here</p>
+            <CloudDownloadIcon />
+          </Box>
         </Box>
       )}
-    </>
+    </Box>
   );
 }
 
