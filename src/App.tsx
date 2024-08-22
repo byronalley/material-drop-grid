@@ -11,17 +11,16 @@ import {
   GridRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { Box, Button, Typography } from "@mui/material";
+import { Alert, Box, Button, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import Papa from "papaparse";
 
 import "./App.css";
 
-const initialMessage = "Drop a CSV File";
-
 function App() {
-  const [statusMessage, setStatusMessage] = useState<string>(initialMessage);
+  const [statusMessage, setStatusMessage] = useState<string | null>("");
+  const [filename, setFilename] = useState<string>("");
   const [gridColumns, setGridColumns] = useState<GridColDef[]>([]);
   const [showGrid, setShowGrid] = useState(false);
 
@@ -30,6 +29,7 @@ function App() {
   const drop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setShowGrid(true);
+    setStatusMessage("Loading file...");
 
     const files = [...e.dataTransfer.items]
       .map((i) => i.getAsFile())
@@ -63,7 +63,8 @@ function App() {
             console.dir(results.errors);
             console.log("----");
           } else {
-            setStatusMessage((file as File)?.name);
+            setFilename((file as File)?.name);
+            setStatusMessage(null);
           }
         },
       });
@@ -92,7 +93,10 @@ function App() {
               alignItems="flex-end"
               sx={{ p: 2, background: "white" }}
             >
-              <Typography variant="subtitle2">{statusMessage}</Typography>
+              {filename && (
+                <Typography variant="subtitle2">{filename}</Typography>
+              )}
+              {statusMessage && <Alert severity="info">{statusMessage}</Alert>}
               <Button
                 variant="contained"
                 color="primary"
@@ -100,7 +104,7 @@ function App() {
                 onClick={(e) => {
                   e.preventDefault();
                   setShowGrid(false);
-                  setStatusMessage(initialMessage);
+                  setStatusMessage("");
                 }}
               >
                 <ArrowBackIcon />
@@ -115,26 +119,31 @@ function App() {
           </Box>
         </>
       ) : (
-        <Box
-          id="fileDrop"
-          onDrop={drop}
-          onDragOver={(e) => e.preventDefault()}
-          display="flex"
-          justifyContent="center"
-          flexDirection="column"
-          alignItems="flex-middle"
-          sx={{
-            width: "100%",
-            background: "#33cccc",
-            minHeight: "7em",
-            padding: "5em",
-          }}
-        >
-          <Box>
-            <p>Drop File Here</p>
-            <CloudDownloadIcon />
+        <>
+          <Typography variant="subtitle1" sx={{ py: 3 }}>
+            Drop a CSV File Below
+          </Typography>
+          <Box
+            id="fileDrop"
+            onDrop={drop}
+            onDragOver={(e) => e.preventDefault()}
+            display="flex"
+            justifyContent="center"
+            flexDirection="column"
+            alignItems="flex-middle"
+            sx={{
+              width: "100%",
+              background: "#33cccc",
+              minHeight: "7em",
+              padding: "5em",
+            }}
+          >
+            <Box>
+              <p>Drop File Here</p>
+              <CloudDownloadIcon />
+            </Box>
           </Box>
-        </Box>
+        </>
       )}
     </Box>
   );
