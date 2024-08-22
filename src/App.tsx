@@ -11,7 +11,7 @@ import {
   GridRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
-import { Box, Button, Container } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import Papa from "papaparse";
@@ -63,7 +63,7 @@ function App() {
             console.dir(results.errors);
             console.log("----");
           } else {
-            setStatusMessage(`CSV file: ${(file as File)?.name}`);
+            setStatusMessage((file as File)?.name);
           }
         },
       });
@@ -78,19 +78,21 @@ function App() {
       justifyContent="center"
       alignItems="center"
       flexDirection="column"
-      width="50%"
+      width="100%"
     >
-      <h1>Material Drop Grid</h1>
-      <p>{statusMessage}</p>
+      <Typography variant="h2" component="h1" sx={{ py: 3 }}>
+        Material Drop Grid
+      </Typography>
       {showGrid ? (
         <>
-          <Box sx={{ p: 2, background: "white" }}>
+          <Box sx={{ p: 2, background: "white", width: "100%" }}>
             <Box
               display="flex"
-              justifyContent="flex-end"
+              justifyContent="space-between"
               alignItems="flex-end"
               sx={{ p: 2, background: "white" }}
             >
+              <Typography variant="subtitle2">{statusMessage}</Typography>
               <Button
                 variant="contained"
                 color="primary"
@@ -106,7 +108,7 @@ function App() {
               </Button>
             </Box>
             <DataGrid
-              sx={{ color: "#223355", background: "white" }}
+              sx={{ color: "#223355", background: "white", width: "100%" }}
               columns={gridColumns || []}
               apiRef={apiRef}
             />
@@ -121,7 +123,6 @@ function App() {
           justifyContent="center"
           flexDirection="column"
           alignItems="flex-middle"
-          sx={{ p: 2, background: "white" }}
           sx={{
             width: "100%",
             background: "#33cccc",
