@@ -11,6 +11,8 @@ import {
   GridRowModel,
   useGridApiRef,
 } from "@mui/x-data-grid";
+import { Box, Button } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Papa from "papaparse";
 
 import "./App.css";
@@ -85,11 +87,35 @@ function App() {
         Drop File Here
       </div>
       {showGrid ? (
-        <DataGrid
-          sx={{ color: "#223355", backgroundColor: "white" }}
-          columns={gridColumns || []}
-          apiRef={apiRef}
-        />
+        <>
+          <Box backgroundColor="white" sx={{ p: 2 }}>
+            <Box
+              display="flex"
+              justifyContent="flex-end"
+              alignItems="flex-end"
+              backgroundColor="white"
+              sx={{ p: 2 }}
+            >
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ height: 40 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowGrid(false);
+                }}
+              >
+                <ArrowBackIcon />
+                Back
+              </Button>
+            </Box>
+            <DataGrid
+              sx={{ color: "#223355", backgroundColor: "white" }}
+              columns={gridColumns || []}
+              apiRef={apiRef}
+            />
+          </Box>
+        </>
       ) : (
         ""
       )}
