@@ -44,6 +44,7 @@ function App() {
         header: true,
         dynamicTyping: true,
         skipEmptyLines: true,
+        worker: true,
         step: (results) => {
           if (id === 0) {
             const columns: GridColDef[] =
@@ -57,6 +58,8 @@ function App() {
           id++;
         },
         complete: (results, file) => {
+          setStatusMessage(null);
+
           if (results.errors.length > 0) {
             setStatusMessage("There were errors parsing CSV file.");
             console.log("CSV Parse Errors:");
@@ -64,7 +67,6 @@ function App() {
             console.log("----");
           } else {
             setFilename((file as File)?.name);
-            setStatusMessage(null);
           }
         },
       });
